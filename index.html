@@ -1,224 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Daily-Reihenfolge 🔀 Flex Edition</title>
-	<style>
-		body {
-			font-family: system-ui, sans-serif;
-			background: #1e1e2f;
-			color: #fff;
-			min-height: 100vh;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 1rem;
-		}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Roulette · Teamübersicht</title>
+  <style>
+    :root{
+      --bg: hsl(240, 22%, 10%);
+      --main: hsl(240, 21%, 21%);
+      --card: #fff;
+      --text: hsl(220 20% 20%);
+      --muted: hsl(220 10% 45%);
+      --accent: #4f46e5;
+      --accent-light: hsl(210 95% 92%);
+      --accent-dark: #6366f1;
+      --accent-ink: white;
+      --radius: 10px;
+      --shadow: 0 6px 20px hsl(220 40% 2% / .08);
+      --speed: 180ms;
+    }
 
-		.app {
-			background: #2a2a40;
-			padding: 2rem;
-			border-radius: 1rem;
-			box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-			width: min(95vw, 800px);
-			display: flex;
-			flex-direction: row;
-			gap: 2rem;
-		}
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0; font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+      color: var(--text); background: linear-gradient(160deg, var(--bg), hsl(240, 22%, 20%));
+      display: grid; place-items: center; padding: 24px;
+    }
 
-		h1 {
-			font-size: 1.2rem;
-			margin-bottom: 0.8rem;
-			text-align: center;
-		}
+    .app{ width: min(100%, 480px); background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    header{ display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid hsl(210 20% 90%); background: hsl(240, 21%, 70%); position: sticky; top: 0; z-index: 2;}
+    header h1{ font-size: 18px; margin: 0; letter-spacing: .2px; color: hsl(210 90% 100%); }
 
-		.left, .right {
-			flex: 1;
-			display: flex;
-			flex-direction: column;
-		}
+    .btn{ appearance: none; border: 0; background: var(--accent); color: var(--accent-ink); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; letter-spacing: .2px; transition: background var(--speed), transform var(--speed); }
+    .btn:hover{ background: var(--accent-dark); transform: translateY(-1px); }
 
-		.members {
-			text-align: left;
-			margin: 0.5rem 0 1rem 0;
-			background: #11111b;
-			padding: 1rem;
-			border-radius: 0.5rem;
-			flex: 1;
-			overflow-y: auto;
-			max-height: 400px;
-		}
+     main{  background: linear-gradient(80deg, var(--main), hsl(240, 21%, 30%)); }
 
-		.member {
-			display: flex;
-			align-items: center;
-			margin-bottom: 0.4rem;
-		}
+    .list{ padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 
-		.member input {
-			margin-right: 0.6rem;
-			transform: scale(1.2);
-			accent-color: #4f46e5;
-		}
+    .person{ display: flex; align-items: center; gap: 14px; padding: 6px; border-radius: var(--radius); background: var(--accent-light); box-shadow: inset 0 0 0 1px hsl(210 20% 85%); transition: background var(--speed), box-shadow var(--speed), transform var(--speed), color var(--speed); cursor: pointer; }
+    .person:hover{ box-shadow: 0 0 0 2px hsl(210 85% 65% / .35); transform: translateY(-1px); }
 
-		button {
-			width: 100%;
-			margin-top: 1rem;
-			background: #4f46e5;
-			border: none;
-			color: #fff;
-			padding: 0.8rem 1rem;
-			border-radius: 0.6rem;
-			font-size: 1rem;
-			font-weight: 600;
-			cursor: pointer;
-			transition: all 0.15s ease;
-		}
+    .person.present{ background: var(--accent-dark); color: var(--accent-ink); box-shadow: 0 4px 10px hsl(210 65% 35% / .25); }
+    .person.present .avatar{ background: var(--accent-ink); color: var(--accent-dark); }
+    .person.present .name,
+    .person.present .role { color: var(--accent-ink); }
 
-		button:hover {
-			background: #6366f1;
-			transform: translateY(-1px);
-			box-shadow: 0 12px 24px rgba(99,102,241,0.3);
-		}
+    .avatar{ width: 42px; height: 42px; border-radius: 50%; background: hsl(210 30% 88%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text); transition: background var(--speed), color var(--speed); }
 
-		.result {
-			background: #11111b;
-			border: 1px solid #444;
-			border-radius: 0.5rem;
-			padding: 1rem;
-			font-size: 0.95rem;
-			line-height: 1.4;
-			text-align: left;
-			flex: 1;
-			display: none;
-		}
-
-		h2 {
-			font-size: 1rem;
-			margin-bottom: 0.5rem;
-			color: #aaa;
-		}
-
-		ol {
-			margin: 0;
-			padding-left: 1.25rem;
-		}
-
-		small {
-			display: block;
-			margin-top: 0.8rem;
-			color: #888;
-			font-size: 0.8rem;
-		}
-	</style>
+    .info{ display: flex; flex-direction: column; }
+    .name{ font-weight: 600; transition: color var(--speed); }
+    .role{ font-size: 13px; color: var(--muted); transition: color var(--speed); }
+  </style>
 </head>
 <body>
-	<div class="app">
-		<div class="left">
-			<h1>Daily-Teilnehmer 👥</h1>
-			<p style="font-size:0.9rem;">Hake <strong>die Abwesenden</strong> ab und klick auf <em>Mischen</em>.</p>
-			<div class="members" id="memberList"></div>
-			<button id="shuffleBtn">Mischen</button>
-		</div>
+  <div class="app">
+    <header>
+      <h1>Daily Roulette</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="shuffleBtn">Würfeln</button>
+        <button class="btn" id="resetBtn">Zurücksetzen</button>
+      </div>
+    </header>
 
-		<div class="right">
-			<h1>Ergebnis 🔀</h1>
-			<div class="result" id="result">
-				<h2>Heutige Reihenfolge:</h2>
-				<ol id="orderList"></ol>
-				<p id="info" style="margin-top: 0.8rem; font-size: 0.8rem; color: #777;"></p>
-			</div>
-		</div>
-	</div>
+    <main>
+      <div class="list" id="teamList" role="list" aria-label="Teamliste"></div>
+    </main>
+  </div>
 
-	<script>
-		// 👉 Teammitglieder festlegen
-		const team = [
-			"Sven",
-			"Jonas",
-			"Steffi",
-			"Rico",
-			"Jana",
-			"Robert",
-			"Daniel",
-			"Sebastian H",
-			"Dennis",
-			"Franzi",
-			"Sebastian J"
-		];
+  <script>
+    const TEAM = [
+      { short: "SWA", name: "Sven",  roleShort: "SM",  role: "Scrum Master" },
+      { short: "JHE", name: "Jonas", roleShort: "DEV", role: "Entwickler" },
+      { short: "RST", name: "Rico",  roleShort: "DEV", role: "Entwickler" },
+      { short: "DGI", name: "Daniel", roleShort: "DEV", role: "Entwickler" },
+      { short: "SHE", name: "Sebastian H",   roleShort: "PO",  role: "Product Owner" },
+      { short: "FDO", name: "Franzi", roleShort: "QA",  role: "Qualitätssicherung" },
+      { short: "DVO", name: "Dennis",   roleShort: "PM",  role: "Product Manager" },
+      { short: "RJO", name: "Robert",   roleShort: "PM",  role: "Product Manager" },
+      { short: "SJU", name: "Sebastin J",   roleShort: "PM",  role: "Product Manager" },
+      { short: "SHE", name: "Steffi",   roleShort: "SUP",  role: "Support" },
+      { short: "JKO", name: "Jana",   roleShort: "SUP",  role: "Support" }
+    ];
 
-		// Letzter Starter wird im Browser gespeichert
-		function getLastStarter() {
-			return localStorage.getItem("dailyLastStarter");
-		}
-		function setLastStarter(name) {
-			localStorage.setItem("dailyLastStarter", name);
-		}
+    const escapeHtml = (str) => String(str)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
 
-		// Mitgliederliste mit Checkboxen
-		const listContainer = document.getElementById("memberList");
-		team.forEach(name => {
-			const div = document.createElement("div");
-			div.classList.add("member");
+    function renderTeam(listEl, team){
+      listEl.innerHTML = '';
+      team.forEach((u) => {
+        const short = u.short?.trim()?.toUpperCase() ?? '';
+        const name  = escapeHtml(u.name ?? 'Unbekannt');
+        const role  = escapeHtml(u.roleShort ?? u.role ?? '');
 
-			const checkbox = document.createElement("input");
-			checkbox.type = "checkbox";
-			checkbox.id = name;
-			checkbox.checked = true;
+        const div = document.createElement('div');
+        div.className = 'person present'; // Standardmäßig ausgewählt
+        div.dataset.short = short;
+        div.innerHTML = `
+          <div class="avatar">${escapeHtml(short)}</div>
+          <div class="info">
+            <div class="name">${name}</div>
+            <div class="role">${role}</div>
+          </div>
+        `;
 
-			const label = document.createElement("label");
-			label.textContent = name;
-			label.setAttribute("for", name);
+        div.addEventListener('click', () => {
+          div.classList.toggle('present');
+        });
 
-			div.appendChild(checkbox);
-			div.appendChild(label);
-			listContainer.appendChild(div);
-		});
+        listEl.appendChild(div);
+      });
+    }
 
-		function shuffle(array) {
-			for (let i = array.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
-				[array[i], array[j]] = [array[j], array[i]];
-			}
-			return array;
-		}
+    const list = document.getElementById('teamList');
+    renderTeam(list, TEAM);
 
-		document.getElementById("shuffleBtn").addEventListener("click", () => {
-			const lastStarter = getLastStarter();
-			const activeMembers = team.filter(name => document.getElementById(name).checked);
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+      const selected = Array.from(document.querySelectorAll('.person.present'));
+      if (selected.length === 0) return alert('Bitte mindestens eine Person auswählen.');
+      const shuffled = selected.sort(() => Math.random() - 0.5);
 
-			if (activeMembers.length === 0) {
-				alert("Niemand anwesend? Dann ist das Daily wohl ausgefallen 😅");
-				return;
-			}
+      list.innerHTML = '';
+      shuffled.forEach((el) => {
+        const short = el.dataset.short || el.querySelector('.avatar').textContent;
+        el.querySelector('.avatar').textContent = short;
+        list.appendChild(el);
+      });
+    });
 
-			let mixed = shuffle([...activeMembers]);
-
-			let attempts = 0;
-			while (mixed[0] === lastStarter && attempts < 10 && mixed.length > 1) {
-				mixed = shuffle([...activeMembers]);
-				attempts++;
-			}
-
-			const newStarter = mixed[0];
-			setLastStarter(newStarter);
-
-			const listEl = document.getElementById("orderList");
-			listEl.innerHTML = "";
-			mixed.forEach(person => {
-				const li = document.createElement("li");
-				li.textContent = person;
-				listEl.appendChild(li);
-			});
-
-			document.getElementById("info").textContent =
-				lastStarter
-					? `Gestern begann ${lastStarter}. Heute startet ${newStarter}.`
-					: `Heute startet ${newStarter}.`;
-
-			document.getElementById("result").style.display = "block";
-		});
-	</script>
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      renderTeam(list, TEAM);
+    });
+  </script>
 </body>
 </html>
